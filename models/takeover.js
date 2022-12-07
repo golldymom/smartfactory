@@ -1,34 +1,24 @@
 const Sequelize = require('sequelize');
 
-module.exports = class User extends Sequelize.Model {
+module.exports = class Takeover extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      factoryname: {
-        type: Sequelize.STRING(100),
+      takeoverDate: {
+        type: Sequelize.DATE,
       },
-      ceoname: {
-        type: Sequelize.STRING(100),
-      },
-      userid: {
+      tTitle: {
         type: Sequelize.STRING(255),
-        unique: true,
+        // unique: true,
         allowNull: false,
       },
-      password: {
+      tContents: {
         type: Sequelize.STRING(500),
         allowNull: false,
       },
-      // role: {
-      //   type: Sequelize.STRING(20),
-      // },
-      email: {
+      tName: {
         type: Sequelize.STRING(255),
-      },
-      phone: {
-        type: Sequelize.STRING(255),
-      },
-      updatedPwDate: {
-        type: Sequelize.DATE,
+        allowNull: false,
+
       },
     }, {
       sequelize,
@@ -41,7 +31,6 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Edukit, { foreignKey: 'companyId', sourceKey: 'userid' });
-    db.User.hasMany(db.Takeover, { foreignKey: 'companyId', sourceKey: 'userid' });
+    db.User.belongsTo(db.User, { foreignKey: 'companyId ', targetKey: 'userid' });
   }
 };
