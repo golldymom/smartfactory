@@ -1,20 +1,27 @@
 const { sequelize } = require('./connection');
-// const Department = require('./department');
+
+// 연결
+const Edukit = require('./edukit');
 const User = require('./user');
+const Takeover = require('./takeover');
 // const Device = require('./device');
 
+// 빈객체생성
 const db = {};
 
 db.sequelize = sequelize;
 
 // model 생성
-// db.Department = Department;
+
+db.Edukit = Edukit;
 db.User = User;
+db.Takeover = Takeover;
 // db.Device = Device;
 
 // model init
-// Department.init(sequelize);
+Edukit.init(sequelize);
 User.init(sequelize);
+Takeover.init(sequelize);
 // Device.init(sequelize);
 
 // association(관계 생성) 이해를 위해 하나씩 관계설정함 아래는 한번에 설정
@@ -25,7 +32,8 @@ User.init(sequelize);
 //   });
 
 // association(관계 생성)
-// Department.associate(db);
+Edukit.associate(db);
 User.associate(db);
+Takeover.associate(db);
 
 module.exports = db;
