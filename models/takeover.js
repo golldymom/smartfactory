@@ -24,13 +24,13 @@ module.exports = class Takeover extends Sequelize.Model {
       sequelize,
       // tableName: 'tableName', // table명을 수동으로 생성 함
       // freezeTableName: true, // true: table명의 복수형 변환을 막음
-      underscored: true, // true: underscored, false: camelCase
-      timestamps: true, // createAt, updatedAt
-      paranoid: true, // deletedAt
+      underscored: false, // true: underscored, false: camelCase
+      timestamps: false, // createAt, updatedAt
+      paranoid: false, // deletedAt
     });
   }
 
   static associate(db) {
-    db.User.belongsTo(db.User, { foreignKey: 'companyId ', targetKey: 'userid' });
+    db.Takeover.belongsTo(db.User, { foreignKey: 'companyId', targetKey: 'id' });
   }
 };
