@@ -4,12 +4,12 @@ module.exports = class Edukit extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
       eStop: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.BOOLEAN,
       },
       pdStartTime: {
         type: Sequelize.DATE,
-        unique: true,
-        allowNull: false,
+        // unique: true,
+        // allowNull: false,
       },
       pdEndTime: {
         type: Sequelize.DATE,

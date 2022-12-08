@@ -14,26 +14,23 @@ const indexRouter = require('./routes/index');
 const mqtts = require('./models/mqtts');
 
 const app = express();
-// logger.info('app start');
+logger.info('app start');
 
-<<<<<<< HEAD
-const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
+// const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
 
-client.on('connect', () => {
-  client.subscribe('myEdukit', (err) => {
-    if (!err) {
-      console.log('mqtt-wrapper : connected!');
-    }
-  });
-});
+// client.on('connect', () => {
+//   client.subscribe('myEdukit', (err) => {
+//     if (!err) {
+//       console.log('mqtt-wrapper : connected!');
+//     }
+//   });
+// });
 
-client.on('message', (myEdukit, message) => {
-  // message is Buffer
-  console.log(message.toString());
-});
+// client.on('message', (myEdukit, message) => {
+//   // message is Buffer
+//   console.log(message.toString());
+// });
 
-=======
->>>>>>> cd3ef9ef37b7fdae4fa275b616a075213f7f8961
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
