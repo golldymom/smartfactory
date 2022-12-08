@@ -5,15 +5,30 @@ const cookieParser = require('cookie-parser');
 // const logger = require('morgan'); // 구코드 삭제
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mqtt = require('mqtt');
 const corsConfig = require('./config/corsConfig.json');
 const models = require('./models/index');
 const logger = require('./lib/logger');
-
 const indexRouter = require('./routes/index');
 // const usersRouter = require('./routes/users'); // 구코드 삭제
 
 const app = express();
 // logger.info('app start');
+
+const client = mqtt.connect('mqtt://localhost:1555');
+
+client.on('connect', () => {
+  client.subscribe('myEdukit', (err) => {
+    if (!err) {
+      console.log('mqtt-wrapper : connected!');
+    }
+  });
+});
+
+client.on('message', (myEdukit, message) => {
+  // message is Buffer
+  console.log(message.toString());
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
