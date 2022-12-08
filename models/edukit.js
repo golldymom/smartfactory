@@ -43,6 +43,6 @@ module.exports = class Edukit extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Edukit.belongsTo(db.User, { foreignKey: 'companyId', targetKey: 'id' });
+    db.Edukit.belongsTo(db.User, { foreignKey: 'companyId', targetKey: 'userid' });
   }
 };

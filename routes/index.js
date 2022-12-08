@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('../lib/logger');
 const authRouter = require('./auth');
-// const departmentRouter = require('./department');
+const takeoverRouter = require('./takeover');
 const userRouter = require('./user');
 // const deviceRouter = require('./device');
 
@@ -25,7 +25,7 @@ router.get('/log-test', (req, res, next) => {
 });
 
 router.use('/auths', authRouter);
-// router.use('/departments', departmentRouter);
+router.use('/takeovers', takeoverRouter);
 router.use('/users', userRouter);
 // router.use('/devices', deviceRouter);
 

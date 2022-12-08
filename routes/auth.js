@@ -31,7 +31,7 @@ router.post('/token', async (req, res) => {
     res.set('token', token); // header 세팅
 
     // 최종 응답
-    res.status(200).json({ token: 'success' });
+    res.status(200).json({ message: 'success', token });
   } catch (err) {
     res.status(500).json({ err: err.toString() });
   }
