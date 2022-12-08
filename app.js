@@ -5,16 +5,18 @@ const cookieParser = require('cookie-parser');
 // const logger = require('morgan'); // 구코드 삭제
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mqtt = require('mqtt');
+const internal = require('stream');
 const corsConfig = require('./config/corsConfig.json');
 const models = require('./models/index');
 const logger = require('./lib/logger');
 const indexRouter = require('./routes/index');
 // const usersRouter = require('./routes/users'); // 구코드 삭제
+const mqtts = require('./models/mqtts');
 
 const app = express();
 // logger.info('app start');
 
+<<<<<<< HEAD
 const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
 
 client.on('connect', () => {
@@ -30,6 +32,8 @@ client.on('message', (myEdukit, message) => {
   console.log(message.toString());
 });
 
+=======
+>>>>>>> cd3ef9ef37b7fdae4fa275b616a075213f7f8961
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
