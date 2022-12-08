@@ -1,5 +1,7 @@
 const mqtt = require('mqtt');
 
+let changeDetector = true;
+
 const client = mqtt.connect('mqtt://localhost:1555');
 
 client.on('connect', () => {
@@ -13,14 +15,14 @@ client.on('connect', () => {
 client.on('message', (myEdukit, message) => {
   // message is Buffer
   const obj = JSON.parse(message.toString());
-  const nowOutput = obj.Wrapper[31].value;
-  const goods = obj.Wrapper[32].value;
-  const detective = nowOutput - goods;
-
-  console.log(obj.Wrapper[6].value);
-  console.log(obj.Wrapper[26].value);
-  console.log(obj.Wrapper[34].value);
-  console.log(obj.Wrapper[35].value);
-  console.log('현재 생산량 : %d 현재 양품 생산량 : %d, 현재 불량품 : %d', nowOutput, goods, detective);
-  client.publish('stupid', 'Hi');
+  if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
+    changeDetector = obj.Wrapper[6].value;
+  }
+  if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[31].value !== 0) {
+    const nowOutput = obj.Wrapper[31].value;
+    const goods = obj.Wrapper[32].value;
+    const detective = nowOutput - goods;
+    console.log('현재 생산량 : %d 현재 양품 생산량 : %d, 현재 불량품 : %d', nowOutput, goods, detective);
+    changeDetector = obj.Wrapper[6].value;
+  }
 });
