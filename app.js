@@ -15,7 +15,7 @@ const indexRouter = require('./routes/index');
 const app = express();
 // logger.info('app start');
 
-const client = mqtt.connect('mqtt://localhost:1555');
+const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
 
 client.on('connect', () => {
   client.subscribe('myEdukit', (err) => {
