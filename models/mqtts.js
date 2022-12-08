@@ -3,7 +3,13 @@ const mqtt = require('mqtt');
 // const { create } = require('./edukit');
 const { Edukit } = require('./index');
 
+<<<<<<< HEAD
 const client = mqtt.connect('mqtt:192.168.0.79:1555');
+=======
+let changeDetector = true;
+
+const client = mqtt.connect('mqtt://localhost:1555');
+>>>>>>> 548269fba768f8ba1f71832058565b4b0adc0fd5
 
 client.on('connect', () => {
   client.subscribe('myEdukit', (err) => {
@@ -34,4 +40,14 @@ client.on('message', (myEdukit, message) => {
     firOutput: obj.Wrapper[34].value,
     pdStartTime: Date.now(),
   });
+  if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
+    changeDetector = obj.Wrapper[6].value;
+  }
+  if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[31].value !== 0) {
+    const nowOutput = obj.Wrapper[31].value;
+    const goods = obj.Wrapper[32].value;
+    const detective = nowOutput - goods;
+    console.log('현재 생산량 : %d 현재 양품 생산량 : %d, 현재 불량품 : %d', nowOutput, goods, detective);
+    changeDetector = obj.Wrapper[6].value;
+  }
 });
