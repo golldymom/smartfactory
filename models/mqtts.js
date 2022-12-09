@@ -1,10 +1,12 @@
 // const { text } = require('body-parser');
 const mqtt = require('mqtt');
-const { Connection } = require('pg');
+// const { connection } = require('mysql2');
+// const mysql = require('mysql2');
 const db = require('./index');
-// const { now } = require('sequelize/types/utils');
-// const { create } = require('./edukit');
-const { Edukit } = require('./index');
+
+const { Edukit, sequelize } = require('./index');
+
+// const conn = mysql.createConnection(connection);
 
 let changeDetector = false; // 시작정지 감지  test 한다고 투루로 함. 원래 펄스
 let emergencyDetector = false; // 비상정지 감지
@@ -28,7 +30,7 @@ client.on('connect', () => {
 // 34 - 3호기 x축
 // 35 - 3호기 y축
 
-client.on('message', (myEdukit, message) => {
+client.on('message', async (myEdukit, message) => {
   const obj = JSON.parse(message.toString());
   // console.log('her1e');
 
@@ -47,7 +49,7 @@ client.on('message', (myEdukit, message) => {
   }
 
   // // 비상정지 시작시
-  else if (obj.Wrapper[27].value === false && emergencyDetector === false) {
+  if (obj.Wrapper[27].value === false && emergencyDetector === false) {
     if (prossecing === true) {
       console.log('작업중 비상정지의 경우');
     } else {
@@ -57,21 +59,20 @@ client.on('message', (myEdukit, message) => {
     emergencyDetector = true;
   }
   // 작업 시작 여부 변화 감지 (작업 시작시 한번만 실행)
+
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
     changeDetector = obj.Wrapper[6].value;
     console.log('here333');
-    const a = Edukit.create({
+    const testMake = await Edukit.create({
       eStop: 'here',
       pdStartTime: Date.now(),
     });
+    // test: id 추출
+    if (testMake) {
+      const result = await sequelize.query('SELECT id from edukits');
+      console.log(result);
+    }
     console.log('data');
-    // db.query('SELECT * FROM projecttest.Edukit', (err, rows, fields) => {
-    //   if (err) {
-    //     console.log(err);
-    //     console.log(rows);
-    //   }
-    // });
-    // db.end();
   }
 
   // // 작업이 끝나면 한번만 실행
