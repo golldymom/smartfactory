@@ -48,13 +48,13 @@ client.on('message', (myEdukit, message) => {
 
   // // 비상정지 시작시
   else if (obj.Wrapper[27].value === false && emergencyDetector === false) {
-    emergencyDetector = true;
     if (prossecing === true) {
       console.log('작업중 비상정지의 경우');
     } else {
       console.log('작업중이 아닌 비상정지의 경우');
     }
     console.log('비상정지 기록시작시점');
+    emergencyDetector = true;
   }
   // 작업 시작 여부 변화 감지 (작업 시작시 한번만 실행)
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
@@ -89,7 +89,7 @@ client.on('message', (myEdukit, message) => {
     //   gappyProduct: detective,
     // });
 
-    console.log('b-data', b);
+    // console.log('b-data', b);
 
     // 비상정지에 의한 작업종료시
     if (obj.Wrapper[27].value === false) {
