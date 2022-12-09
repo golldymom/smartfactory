@@ -4,7 +4,7 @@ module.exports = class Edukit extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
       eStop: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING(255),
       },
       pdStartTime: {
         type: Sequelize.DATE,
