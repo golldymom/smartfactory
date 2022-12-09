@@ -41,7 +41,7 @@ module.exports = class User extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.User.hasMany(db.Edukit, { foreignKey: 'companyId', sourceKey: 'id' });
-    db.User.hasMany(db.Takeover, { foreignKey: 'companyId', sourceKey: 'id' });
+    db.User.hasMany(db.Edukit, { foreignKey: 'companyId', sourceKey: 'userid' });
+    db.User.hasMany(db.Takeover, { foreignKey: 'companyId', sourceKey: 'userid' });
   }
 };

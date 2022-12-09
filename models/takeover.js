@@ -29,8 +29,9 @@ module.exports = class Takeover extends Sequelize.Model {
       paranoid: false, // deletedAt
     });
   }
+  // test
 
   static associate(db) {
-    db.Takeover.belongsTo(db.User, { foreignKey: 'companyId', targetKey: 'id' });
+    db.Takeover.belongsTo(db.User, { foreignKey: 'companyId', targetKey: 'userid' });
   }
 };
