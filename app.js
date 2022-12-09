@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const internal = require('stream');
+const mysql = require('mysql');
 const corsConfig = require('./config/corsConfig.json');
 const models = require('./models/index');
 const logger = require('./lib/logger');
