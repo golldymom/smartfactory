@@ -1,10 +1,14 @@
+// const { text } = require('body-parser');
 const mqtt = require('mqtt');
+// const { now } = require('sequelize/types/utils');
+// const { create } = require('./edukit');
+const { Edukit } = require('./index');
 
 let changeDetector = false; // 시작정지 감지
 let emergencyDetector = false; // 비상정지 감지
 let prossecing = false; // 작업중 표시변수
 
-const client = mqtt.connect('mqtt://localhost:1555');
+const client = mqtt.connect('mqtt:192.168.0.79:1555');
 
 client.on('connect', () => {
   client.subscribe('myEdukit', (err) => {
@@ -24,6 +28,7 @@ client.on('connect', () => {
 
 client.on('message', (myEdukit, message) => {
   const obj = JSON.parse(message.toString());
+  console.log(obj.Wrapper[6].value);
   // 비상정지 종료시
   if (obj.Wrapper[27].value === true && emergencyDetector === true) {
     // 비상정지에 의한 작업종료시 해당작업의 비상정지해제 시간 분기점 필요
@@ -49,6 +54,7 @@ client.on('message', (myEdukit, message) => {
   // 작업 시작 여부 변화 감지 (작업 시작시 한번만 실행)
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
     changeDetector = obj.Wrapper[6].value;
+    console.log('here');
   }
   // 작업이 끝나면 한번만 실행
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[31].value !== 0) {

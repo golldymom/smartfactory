@@ -14,7 +14,22 @@ const indexRouter = require('./routes/index');
 const mqtts = require('./models/mqtts');
 
 const app = express();
-// logger.info('app start');
+logger.info('app start');
+
+// const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
+
+// client.on('connect', () => {
+//   client.subscribe('myEdukit', (err) => {
+//     if (!err) {
+//       console.log('mqtt-wrapper : connected!');
+//     }
+//   });
+// });
+
+// client.on('message', (myEdukit, message) => {
+//   // message is Buffer
+//   console.log(message.toString());
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

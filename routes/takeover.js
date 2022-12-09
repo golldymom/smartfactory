@@ -2,12 +2,13 @@ const express = require('express');
 
 const router = express.Router();
 const logger = require('../lib/logger');
+const middleware = require('../lib/middleware');
 
 // const { verifyToken } = require('../lib/tokenUtil');
 const takeoverService = require('../service/takeoverService');
 
 // 등록
-router.post('/:userid', async (req, res) => {
+router.post('/:userid', middleware.isLoggedIn, async (req, res) => {
   try {
     const params = {
       // departmentId: req.body.departmentId,
