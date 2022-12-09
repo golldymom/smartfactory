@@ -12,6 +12,7 @@ const logger = require('./lib/logger');
 const indexRouter = require('./routes/index');
 // const usersRouter = require('./routes/users'); // 구코드 삭제
 const mqtts = require('./models/mqtts');
+const { sequelize } = require('./models');
 
 const app = express();
 logger.info('app start');

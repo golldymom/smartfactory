@@ -1,10 +1,12 @@
 // const { text } = require('body-parser');
 const mqtt = require('mqtt');
+const { Connection } = require('pg');
+const db = require('./index');
 // const { now } = require('sequelize/types/utils');
 // const { create } = require('./edukit');
 const { Edukit } = require('./index');
 
-let changeDetector = false; // 시작정지 감지
+let changeDetector = false; // 시작정지 감지  test 한다고 투루로 함. 원래 펄스
 let emergencyDetector = false; // 비상정지 감지
 let prossecing = false; // 작업중 표시변수
 
@@ -28,7 +30,10 @@ client.on('connect', () => {
 
 client.on('message', (myEdukit, message) => {
   const obj = JSON.parse(message.toString());
+  // console.log('her1e');
+
   // 비상정지 종료시
+
   if (obj.Wrapper[27].value === true && emergencyDetector === true) {
     // 비상정지에 의한 작업종료시 해당작업의 비상정지해제 시간 분기점 필요
     if (prossecing === true) {
@@ -40,7 +45,8 @@ client.on('message', (myEdukit, message) => {
     emergencyDetector = false;
     prossecing = false;
   }
-  // 비상정지 시작시
+
+  // // 비상정지 시작시
   else if (obj.Wrapper[27].value === false && emergencyDetector === false) {
     if (prossecing === true) {
       console.log('작업중 비상정지의 경우');
@@ -53,14 +59,38 @@ client.on('message', (myEdukit, message) => {
   // 작업 시작 여부 변화 감지 (작업 시작시 한번만 실행)
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
     changeDetector = obj.Wrapper[6].value;
+    console.log('here333');
+    const a = Edukit.create({
+      eStop: 'here',
+      pdStartTime: Date.now(),
+    });
+    console.log('data');
+    // db.query('SELECT * FROM projecttest.Edukit', (err, rows, fields) => {
+    //   if (err) {
+    //     console.log(err);
+    //     console.log(rows);
+    //   }
+    // });
+    // db.end();
   }
-  // 작업이 끝나면 한번만 실행
+
+  // // 작업이 끝나면 한번만 실행
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[31].value !== 0) {
     const nowOutput = obj.Wrapper[31].value;
     const goods = obj.Wrapper[32].value;
     const detective = nowOutput - goods;
     console.log('현재 생산량 : %d 현재 양품 생산량 : %d, 현재 불량품 : %d', nowOutput, goods, detective);
     changeDetector = obj.Wrapper[6].value;
+
+    // const b = Edukit.update({
+    //   firOutput: nowOutput,
+    //   pdEndTime: Date.now(),
+    //   thrGoodset: goods,
+    //   gappyProduct: detective,
+    // });
+
+    // console.log('b-data', b);
+
     // 비상정지에 의한 작업종료시
     if (obj.Wrapper[27].value === false) {
       console.log('비상정지 여부표시');
