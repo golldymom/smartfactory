@@ -8,9 +8,10 @@ const { Edukit, sequelize } = require('./index');
 
 // const conn = mysql.createConnection(connection);
 
-let changeDetector = false; // 시작정지 감지  test 한다고 투루로 함. 원래 펄스
+let changeDetector = false; // 시작정지 감지
 let emergencyDetector = false; // 비상정지 감지
 let prossecing = false; // 작업중 표시변수
+let cnt = 0;
 
 const client = mqtt.connect('mqtt:192.168.0.79:1555');
 
@@ -33,33 +34,41 @@ client.on('connect', () => {
 client.on('message', async (myEdukit, message) => {
   const obj = JSON.parse(message.toString());
 
-  // // 비상정지 시작시
+  // // 비상정지 시작시    1초 뒤 인식
   if (obj.Wrapper[27].value === false && emergencyDetector === false) {
-    emergencyDetector = true;
     setTimeout(() => {
-      if (obj.Wrapper[27].value === false) {
-        if (prossecing === true) {
-          console.log('작업중 비상정지의 경우');
+      cnt += 1;
+      if (obj.Wrapper[27].value === false && cnt === 1) {
+        if (prossecing === true) { // 작업중 비상정지의 경우
+          const resents = sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
+          Edukit.update({
+            eStop: 'O', // 비상정지 여부를 업데이트
+            estopRuntime: Date.now(), // 비상정지 시작시간 업데이트
+            where: { id: resents[0][0].id },
+          });
         } else {
-          console.log('작업중이 아닌 비상정지의 경우');
+          // 작업중이 아닌 비상정지의 경우
+          Edukit.create({ // 작업생성 후  비상정지 여부 표시
+            eStop: 'O',
+            estopRuntime: Date.now(), // 비상정지 시작시간 기록시작
+          });
         }
-        console.log('비상정지 기록시작시점');
         emergencyDetector = true;
+        setTimeout(() => { cnt = 0; }, 1000);
       }
     }, 1000);
   }
 
-  // 비상정지 종료시
+  // 비상정지 종료시  1초 뒤 인식
 
   if (obj.Wrapper[27].value === true && emergencyDetector === true) {
     setTimeout(() => {
       if (emergencyDetector === true) {
-        if (prossecing === true) {
-          console.log('작업중 비상정지의 경우');
-        } else {
-          console.log('작업중이 아닌 비상정지의 경우');
-        }
-        console.log('비상정지 기록정지시점');
+        const resents = sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
+        Edukit.update({
+          estopCleartime: Date.now(), // 비상정지 종료시간 업데이트
+          where: { id: resents[0][0].id },
+        });
         emergencyDetector = false;
         prossecing = false;
       }
@@ -71,38 +80,31 @@ client.on('message', async (myEdukit, message) => {
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[6].value === true) {
     changeDetector = obj.Wrapper[6].value;
     const testMake = await Edukit.create({
-      eStop: 'here',
+      eStop: 'X',
       pdStartTime: Date.now(),
     });
-    // test: id 추출
-    if (testMake) {
-      const result = await sequelize.query('SELECT id from edukits');
-      console.log(result);
-    }
-    console.log('data');
   }
 
   // // 작업이 끝나면 한번만 실행
   if (changeDetector !== obj.Wrapper[6].value && obj.Wrapper[31].value !== 0) {
-    const nowOutput = obj.Wrapper[31].value;
-    const goods = obj.Wrapper[32].value;
-    const detective = nowOutput - goods;
-    console.log('현재 생산량 : %d 현재 양품 생산량 : %d, 현재 불량품 : %d', nowOutput, goods, detective);
+    const nowOutput = obj.Wrapper[31].value; // 1호기 카운트, 총 생산량
+    const goods = obj.Wrapper[32].value; // 2호기 카운트, 양품 생산량
+    const detective = nowOutput - goods; // 총생산량 - 양품생산량, 불량품
     changeDetector = obj.Wrapper[6].value;
+    const resents = await sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1'); // 최근 생성 작업 불러오기
 
-    // const b = Edukit.update({
-    //   firOutput: nowOutput,
-    //   pdEndTime: Date.now(),
-    //   thrGoodset: goods,
-    //   gappyProduct: detective,
-    // });
-
-    // console.log('b-data', b);
+    Edukit.update({ // 계산된 작업량 DB 업데이트
+      firOutput: nowOutput,
+      pdEndTime: Date.now(),
+      thrGoodset: goods,
+      gappyProduct: detective,
+    }, {
+      where: { id: resents[0][0].id }, // 가장 최근 작업에 업로드
+    });
 
     // 비상정지에 의한 작업종료시
     if (obj.Wrapper[27].value === false) {
-      console.log('비상정지 여부표시');
-      prossecing = true;
+      prossecing = true; // 작업중 표시
     }
   }
 });

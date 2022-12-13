@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const logger = require('../lib/logger');
 const middleware = require('../lib/middleware');
-
+const { sequelize } = require('../models/index');
 // const { verifyToken } = require('../lib/tokenUtil');
 const takeoverService = require('../service/takeoverService');
 
@@ -41,23 +41,15 @@ router.post('/:userid', middleware.isLoggedIn, async (req, res) => {
 });
 
 // 리스트 조회
-// router.get('/', verifyToken, async (req, res) => {
-//   try {
-//     const params = {
-
-//       companyId: req.query.companyId,
-//     };
-//     logger.info(`(takeover.list.params) ${JSON.stringify(params)}`);
-
-//     const result = await takeoverService.list(params);
-//     logger.info(`(takeover.list.result) ${JSON.stringify(result)}`);
-
-//     // 최종 응답
-//     res.status(200).json(result);
-//   } catch (err) {
-//     res.status(500).json({ err: err.toString() });
-//   }
-// });
+router.get('/list:page', async (req, res) => {
+  try {
+    // 최종 응답
+    const result = await sequelize.query('SELECT * from takeovers limit 5');
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ err: err.toString() });
+  }
+});
 
 // // 상세정보 조회
 // router.get('/:id', async (req, res) => {
