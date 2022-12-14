@@ -13,7 +13,7 @@ let emergencyDetector = false; // 비상정지 감지
 let prossecing = false; // 작업중 표시변수
 let cnt = 0;
 
-const client = mqtt.connect('mqtt:192.168.0.79:1555');
+const client = mqtt.connect('mqtt:192.168.0.79:1888');
 
 client.on('connect', () => {
   client.subscribe('myEdukit', (err) => {
@@ -40,16 +40,17 @@ client.on('message', async (myEdukit, message) => {
       cnt += 1;
       if (obj.Wrapper[27].value === false && cnt === 1) {
         if (prossecing === true) { // 작업중 비상정지의 경우
-          const resents = sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
-          Edukit.update({
-            eStop: 'O', // 비상정지 여부를 업데이트
-            estopRuntime: Date.now(), // 비상정지 시작시간 업데이트
-            where: { id: resents[0][0].id },
+          Edukit.max('id').then((max) => {
+            Edukit.update({
+              eStop: 'O', // 비상정지 여부를 업데이트
+              estopRuntime: Date.now(), // 비상정지 시작시간 업데이트
+            }, { where: { id: max } });
           });
         } else {
           // 작업중이 아닌 비상정지의 경우
           Edukit.create({ // 작업생성 후  비상정지 여부 표시
             eStop: 'O',
+            pdStartTime: Date.now(),
             estopRuntime: Date.now(), // 비상정지 시작시간 기록시작
           });
         }
@@ -64,10 +65,11 @@ client.on('message', async (myEdukit, message) => {
   if (obj.Wrapper[27].value === true && emergencyDetector === true) {
     setTimeout(() => {
       if (emergencyDetector === true) {
-        const resents = sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
-        Edukit.update({
-          estopCleartime: Date.now(), // 비상정지 종료시간 업데이트
-          where: { id: resents[0][0].id },
+        Edukit.max('id').then((max) => {
+          Edukit.update({
+            pdEndTime: Date.now(),
+            estopCleartime: Date.now(), // 비상정지 종료시간 업데이트
+          }, { where: { id: max } });
         });
         emergencyDetector = false;
         prossecing = false;
@@ -83,6 +85,8 @@ client.on('message', async (myEdukit, message) => {
       eStop: 'X',
       pdStartTime: Date.now(),
     });
+    // const tset = await Edukit.findOne();
+    // console.log("Jane's auto-generated ID:", tset);
   }
 
   // // 작업이 끝나면 한번만 실행
@@ -91,15 +95,17 @@ client.on('message', async (myEdukit, message) => {
     const goods = obj.Wrapper[32].value; // 2호기 카운트, 양품 생산량
     const detective = nowOutput - goods; // 총생산량 - 양품생산량, 불량품
     changeDetector = obj.Wrapper[6].value;
-    const resents = await sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1'); // 최근 생성 작업 불러오기
-
-    Edukit.update({ // 계산된 작업량 DB 업데이트
-      firOutput: nowOutput,
-      pdEndTime: Date.now(),
-      thrGoodset: goods,
-      gappyProduct: detective,
-    }, {
-      where: { id: resents[0][0].id }, // 가장 최근 작업에 업로드
+    // const resents = await sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
+    // console.log(resents);
+    Edukit.max('id').then((max) => {
+      Edukit.update({ // 계산된 작업량 DB 업데이트
+        firOutput: nowOutput,
+        pdEndTime: Date.now(),
+        thrGoodset: goods,
+        gappyProduct: detective,
+      }, {
+        where: { id: max }, // 가장 최근 작업에 업로드
+      });
     });
 
     // 비상정지에 의한 작업종료시
