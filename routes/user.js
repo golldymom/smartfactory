@@ -8,12 +8,10 @@ const userService = require('../service/userService');
 router.post('/', async (req, res) => {
   try {
     const params = {
-      // departmentId: req.body.departmentId,
       factoryname: req.body.factoryname,
       ceoname: req.body.ceoname,
       userid: req.body.s_userid,
       password: req.body.s_password,
-      // role: req.body.role,
       email: req.body.email,
       phone: req.body.phone,
     };
@@ -80,24 +78,22 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const params = {
-      id: req.params.id,
-      // departmentId: req.body.departmentId,
-      factoryname: req.body.factoryname,
-      ceoname: req.body.ceoname,
-      // role: req.body.role,
+      s_userid: req.body.s_userid,
+      password: req.body.password,
       email: req.body.email,
       phone: req.body.phone,
+      factoryname: req.body.factoryname,
     };
+    console.log(params.s_userid);
     logger.info(`(user.update.params) ${JSON.stringify(params)}`);
 
     // 입력값 null 체크
-    if (!params.ceoname) {
-      const err = new Error('Not allowed null (ceoname)');
+    if (!params.s_userid || !params.password || !params.phone || !params.factoryname) {
+      const err = new Error('Not allowed null');
       logger.error(err.toString());
 
       res.status(500).json({ err: err.toString() });
     }
-
     const result = await userService.edit(params);
     logger.info(`(user.update.result) ${JSON.stringify(result)}`);
 

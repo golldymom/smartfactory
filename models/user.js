@@ -6,9 +6,6 @@ module.exports = class User extends Sequelize.Model {
       factoryname: {
         type: Sequelize.STRING(100),
       },
-      ceoname: {
-        type: Sequelize.STRING(100),
-      },
       userid: {
         type: Sequelize.STRING(255),
         unique: true,
@@ -18,9 +15,6 @@ module.exports = class User extends Sequelize.Model {
         type: Sequelize.STRING(500),
         allowNull: false,
       },
-      // role: {
-      //   type: Sequelize.STRING(20),
-      // },
       email: {
         type: Sequelize.STRING(255),
       },

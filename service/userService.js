@@ -80,8 +80,23 @@ const service = {
   async edit(params) {
     let result = null;
 
+    let hashPassword = null;
     try {
-      result = await userDao.update(params);
+      hashPassword = await hashUtil.makePasswordHash(params.password);
+      logger.debug(`(userService.makePassword) ${JSON.stringify(params.password)}`);
+    } catch (err) {
+      logger.error(`(userService.makePassword) ${err.toString()}`);
+      return new Promise((resolve, reject) => {
+        reject(err);
+      });
+    }
+    const upParams = {
+      ...params,
+      password: hashPassword,
+    };
+
+    try {
+      result = await userDao.update(upParams);
       logger.debug(`(userService.edit) ${JSON.stringify(result)}`);
     } catch (err) {
       logger.error(`(userService.edit) ${err.toString()}`);

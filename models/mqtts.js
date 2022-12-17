@@ -1,19 +1,14 @@
-// const { text } = require('body-parser');
 const mqtt = require('mqtt');
-// const { connection } = require('mysql2');
-// const mysql = require('mysql2');
 const db = require('./index');
 
 const { Edukit, sequelize } = require('./index');
-
-// const conn = mysql.createConnection(connection);
 
 let changeDetector = false; // 시작정지 감지
 let emergencyDetector = false; // 비상정지 감지
 let prossecing = false; // 작업중 표시변수
 let cnt = 0;
-
-const client = mqtt.connect('mqtt:192.168.0.79:1888');
+// let check = -1;
+const client = mqtt.connect('mqtt:192.168.0.79:2555');
 
 client.on('connect', () => {
   client.subscribe('myEdukit', (err) => {
@@ -33,6 +28,13 @@ client.on('connect', () => {
 
 client.on('message', async (myEdukit, message) => {
   const obj = JSON.parse(message.toString());
+  // if (check !== obj.Wrapper[31].value) { // 현재생산량이 달라지면
+  // for (let i = 0; i < 10; i++) {
+  client.publish('testest', obj.Wrapper[31].value); // 현재생산량 mqtt 발행
+  // }
+
+  // check = obj.Wrapper[31].value; // 체크포인트
+  // }
 
   // // 비상정지 시작시    1초 뒤 인식
   if (obj.Wrapper[27].value === false && emergencyDetector === false) {
@@ -96,7 +98,7 @@ client.on('message', async (myEdukit, message) => {
     const detective = nowOutput - goods; // 총생산량 - 양품생산량, 불량품
     changeDetector = obj.Wrapper[6].value;
     // const resents = await sequelize.query('SELECT id FROM edukits ORDER BY id DESC LIMIT 1');
-    // console.log(resents);
+
     Edukit.max('id').then((max) => {
       Edukit.update({ // 계산된 작업량 DB 업데이트
         firOutput: nowOutput,
