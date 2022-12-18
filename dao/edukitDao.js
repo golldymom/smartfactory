@@ -1,12 +1,12 @@
 const { Op } = require('sequelize');
 // const { User, Department } = require('../models/index');
-const { Takeover } = require('../models/index');
+const { Edukit } = require('../models/index');
 
 const dao = {
   // 등록
   insert(params) {
     return new Promise((resolve, reject) => {
-      Takeover.create(params).then((inserted) => {
+      Edukit.create(params).then((inserted) => {
         resolve(inserted);
       }).catch((err) => {
         reject(err);
@@ -26,7 +26,7 @@ const dao = {
     if (params.userid) {
       setQuery.where = {
         ...setQuery.where,
-        id: params.userid, // '='검색
+        userid: params.userid, // '='검색
       };
     }
 
@@ -34,7 +34,7 @@ const dao = {
     setQuery.order = [['id', 'DESC']];
 
     return new Promise((resolve, reject) => {
-      Takeover.findAndCountAll({
+      Edukit.findAndCountAll({
         ...setQuery,
         attributes: { exclude: ['password'] }, // password 필드 제외
         // include: [
@@ -53,7 +53,7 @@ const dao = {
   // 상세정보 조회
   selectInfo(params) {
     return new Promise((resolve, reject) => {
-      Takeover.findByPk(
+      Edukit.findByPk(
         params.id,
         {
           attributes: { exclude: ['password'] }, // password 필드 제외
@@ -68,7 +68,7 @@ const dao = {
   // 수정
   update(params) {
     return new Promise((resolve, reject) => {
-      Takeover.update(
+      Edukit.update(
         params,
         {
           where: { id: params.id },
@@ -83,7 +83,7 @@ const dao = {
   // 삭제
   delete(params) {
     return new Promise((resolve, reject) => {
-      Takeover.destroy({
+      Edukit.destroy({
         where: { id: params.id },
       }).then((deleted) => {
         resolve({ deletedCount: deleted });
@@ -93,18 +93,18 @@ const dao = {
     });
   },
   // 로그인을 위한 사용자 조회
-  // selectUser(params) {
-  //   return new Promise((resolve, reject) => {
-  //     Takeover.findOne({
-  //       attributes: ['id', 'userid', 'password', 'factoryname', 'ceoname'],
-  //       where: { userid: params.userid },
-  //     }).then((selectedOne) => {
-  //       resolve(selectedOne);
-  //     }).catch((err) => {
-  //       reject(err);
-  //     });
-  //   });
-  // },
+  selectUser(params) {
+    return new Promise((resolve, reject) => {
+      Edukit.findOne({
+        attributes: ['id', 'userid', 'password', 'factoryname', 'ceoname'],
+        where: { userid: params.userid },
+      }).then((selectedOne) => {
+        resolve(selectedOne);
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  },
 };
 
 module.exports = dao;

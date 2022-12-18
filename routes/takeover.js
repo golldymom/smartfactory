@@ -9,7 +9,7 @@ const middleware = require('../lib/middleware');
 const takeoverService = require('../service/takeoverService');
 
 // 등록
-router.post('/reg', middleware.isLoggedIn, async (req, res) => {
+router.post('/reg', async (req, res) => {
   try {
     const params = {
       // departmentId: req.body.departmentId,
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
   try {
     // 최종 응답
     // const result = await sequelize.query('SELECT * from takeovers limit 5');
-    const result = await Takeover.findAll({ limit: 5 });
+    const result = await Takeover.findAll({});
     res.json(result);
   } catch (err) {
     res.status(500).json({ err: err.toString() });
@@ -75,18 +75,16 @@ router.put('/:id', async (req, res) => {
   try {
     const params = {
       id: req.params.id,
-      // departmentId: req.body.departmentId,
-      factoryname: req.body.factoryname,
-      ceoname: req.body.ceoname,
-      // role: req.body.role,
-      email: req.body.email,
-      phone: req.body.phone,
+      tname: req.body.tName,
+      takeoverDate: req.body.takeoverDate,
+      tTitle: req.body.tTitle,
+      tContents: req.body.tContents,
     };
     logger.info(`(user.update.params) ${JSON.stringify(params)}`);
 
     // 입력값 null 체크
-    if (!params.ceoname) {
-      const err = new Error('Not allowed null (ceoname)');
+    if (!params.id) {
+      const err = new Error('Not allowed null (id)');
       logger.error(err.toString());
 
       res.status(500).json({ err: err.toString() });

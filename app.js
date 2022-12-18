@@ -2,12 +2,11 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-// const logger = require('morgan'); // 구코드 삭제
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const internal = require('stream');
 const mysql = require('mysql');
-const corsConfig = require('./config/corsConfig.json');
+const { corsConfig } = require('./config/corsConfig');
 const models = require('./models/index');
 const logger = require('./lib/logger');
 const indexRouter = require('./routes/index');
@@ -17,21 +16,6 @@ const { sequelize } = require('./models');
 
 const app = express();
 logger.info('app start');
-
-// const client = mqtt.connect('mqtt:192.168.0.79:1555'); // 호진씨 주소
-
-// client.on('connect', () => {
-//   client.subscribe('myEdukit', (err) => {
-//     if (!err) {
-//       console.log('mqtt-wrapper : connected!');
-//     }
-//   });
-// });
-
-// client.on('message', (myEdukit, message) => {
-//   // message is Buffer
-//   console.log(message.toString());
-// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

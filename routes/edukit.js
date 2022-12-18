@@ -1,11 +1,12 @@
 const express = require('express');
+const { Edukit, sequelize } = require('../models/index');
 
 const router = express.Router();
 const logger = require('../lib/logger');
-// const middleware = require('../lib/middleware');
+const middleware = require('../lib/middleware');
 
 // const { verifyToken } = require('../lib/tokenUtil');
-const takeoverService = require('../service/takeoverService');
+const edukitService = require('../service/edukitService');
 
 // 등록
 router.post('/', async (req, res) => {
@@ -22,8 +23,7 @@ router.post('/', async (req, res) => {
       estopClear: req.params.estopClear,
 
     };
-    // console.log('here', params);
-    logger.info(`(takeover.reg.params) ${JSON.stringify(params)}`);
+    logger.info(`(edukit.reg.params) ${JSON.stringify(params)}`);
 
     // 입력값 null 체크
     if (!params.tTitle || !params.tContents || !params.takeoverDate || !params.tName) {
@@ -34,8 +34,8 @@ router.post('/', async (req, res) => {
     }
 
     // 비즈니스 로직 호출
-    const result = await takeoverService.reg(params);
-    logger.info(`(takeover.reg.result) ${JSON.stringify(result)}`);
+    const result = await edukitService.reg(params);
+    logger.info(`(edukit.reg.result) ${JSON.stringify(result)}`);
 
     // 최종 응답
     res.status(200).json(result);
@@ -43,3 +43,17 @@ router.post('/', async (req, res) => {
     res.status(500).json({ err: err.toString() });
   }
 });
+
+// 리스트 조회
+router.get('/', async (req, res) => {
+  try {
+    // 최종 응답
+    // const result = await sequelize.query('SELECT * from takeovers limit 5');
+    const result = await Edukit.findAll({ limit: 5 });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ err: err.toString() });
+  }
+});
+
+module.exports = router;
