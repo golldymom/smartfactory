@@ -16,13 +16,14 @@ const dao = {
   // 리스트 조회
   selectList(params) {
     // where 검색 조건
+    console.log('here안돔');
     const setQuery = {};
-    if (params.factoryname) {
-      setQuery.where = {
-        ...setQuery.where,
-        factoryname: { [Op.like]: `%${params.factoryname}%` }, // like검색
-      };
-    }
+    // if (params.takeoverDate) {
+    //   setQuery.where = {
+    //     ...setQuery.where,
+    //     takeoverDate: { [Op.like]: `%${params.takeoverDate}%` }, // like검색
+    //   };
+    // }
     if (params.userid) {
       setQuery.where = {
         ...setQuery.where,

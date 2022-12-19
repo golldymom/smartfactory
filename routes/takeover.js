@@ -1,12 +1,14 @@
 const express = require('express');
-const { Takeover, sequelize } = require('../models/index');
+const { Takeover } = require('../models/index');
 
 const router = express.Router();
 const logger = require('../lib/logger');
 const middleware = require('../lib/middleware');
-// const { sequelize } = require('../models/index');
+const sequelize = require('sequelize');
 // const { verifyToken } = require('../lib/tokenUtil');
 const takeoverService = require('../service/takeoverService');
+
+const { Op } = sequelize;
 
 // 등록
 router.post('/reg', async (req, res) => {
@@ -41,11 +43,17 @@ router.post('/reg', async (req, res) => {
 });
 
 // 리스트 조회
-router.get('/', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     // 최종 응답
     // const result = await sequelize.query('SELECT * from takeovers limit 5');
-    const result = await Takeover.findAll({});
+    // const { id } = req.body;
+    // console.log('list test:');
+    const result = await Takeover.findAll({
+      where: {
+        companyId: req.params.id,
+      },
+    });
     res.json(result);
   } catch (err) {
     res.status(500).json({ err: err.toString() });
@@ -53,14 +61,25 @@ router.get('/', async (req, res) => {
 });
 
 // 상세정보 조회
-router.get('/:id', async (req, res) => {
+router.get('/:id/today', async (req, res) => {
   try {
     const params = {
       id: req.params.id,
+      // takeoverDate: req.params.takeoverDate,
     };
+    // console.log('get');
+    const { takeoverDate } = req.body;
+    // console.log('here', takeoverDate);
     logger.info(`(user.info.params) ${JSON.stringify(params)}`);
 
-    const result = await takeoverService.info(params);
+    const result = await Takeover.findOne({
+      where: {
+        companyId: req.params.id,
+        takeoverDate: { [Op.like]: `%${takeoverDate}%` },
+      },
+
+    });
+    // const result = await takeoverService.info(params);
     logger.info(`(user.info.result) ${JSON.stringify(result)}`);
 
     // 최종 응답
